@@ -77,6 +77,7 @@ def DisplayMenu():
 
 def GetMenuChoice():
   Choice = input()
+  Choice.lower()
   print()
   return Choice
 
@@ -134,6 +135,11 @@ def GetPlayerName():
 
 def GetChoiceFromUser():
   Choice = input('Do you think the next card will be higher than the last card (enter y or n)? ')
+  Choice.lower()
+  if Choice == "yes":
+    Choice = "y"
+  elif Choice == "no":
+    Choice = "n"
   return Choice
 
 def DisplayEndOfGameMessage(Score):
