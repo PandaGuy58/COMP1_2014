@@ -79,6 +79,10 @@ def GetMenuChoice():
   Choice = input()
   Choice.lower()
   print()
+  print(Choice)
+  if Choice == "quit":
+    Choice = "q"
+  print(Choice)
   return Choice
 
 def LoadDeck(Deck):
