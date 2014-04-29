@@ -8,7 +8,69 @@ import random
 import datetime
 
 NO_OF_RECENT_SCORES = 3
+ace_high = True
 
+def TRecentScore():
+  pass
+def BubbleSortScores(RecentScores):
+  complete = False
+  while not complete:
+    complete = True
+    for I in range(len(RecentScores)):
+      try:
+        if RecentScores[I].Score < RecentScores[I+1].Score:
+          complete = False
+          temp = RecentScores[I]
+          RecentScores[I] = RecentScores[I+1]
+          RecentScores[I+1] = temp
+      except:
+        pass
+  return RecentScores
+    
+def DisplayOptions():
+  print()
+  print("OPTION MENU")
+  print('1. Set Ace to be HIGH or LOW')
+
+def GetOptionChoice():
+  print("Select an option from the menu (or enter q to quit):")
+  complete = False
+  while not complete:
+    OptionChoice = input()
+    if OptionChoice == '1':
+      complete = True
+    else:
+      try:
+        OptionChoice = OptionChoice.lower()
+      except:
+        print("Invalid Input!")
+      if OptionChoice == 'q':
+        complete = True
+      else:
+        print("Invalid Input!")
+  return OptionChoice
+
+def SetOptions(OptionChoice,ace_high):
+  if OptionChoice == '1':
+    ace_high = SetAceHighOrLow(ace_high)
+  return ace_high  
+
+def SetAceHighOrLow(ace_high):
+  print("Do you want the ACE to be (h)igh or (l)ow?")
+  complete = False
+  while not complete:
+    ace_high = input()
+    ace_high = ace_high.lower()
+    if ace_high == 'l':
+      ace_high = False
+      complete = True
+    elif ace_high == 'h':
+      ace_high = True
+      complete = True
+    else:
+      print("Invalid Input!")
+  print("Assigned!")
+  
 class TCard():
   def __init__(self):
     self.Suit = 0
@@ -26,32 +88,60 @@ Choice = ''
   
 def GetRank(RankNo):
   Rank = ''
-  if RankNo == 1:
-    Rank = 'Ace'
-  elif RankNo == 2:
-    Rank = 'Two'
-  elif RankNo == 3:
-    Rank = 'Three'
-  elif RankNo == 4:
-    Rank = 'Four'
-  elif RankNo == 5:
-    Rank = 'Five'
-  elif RankNo == 6:
-    Rank = 'Six'
-  elif RankNo == 7:
-    Rank = 'Seven'
-  elif RankNo == 8:
-    Rank = 'Eight'
-  elif RankNo == 9:
-    Rank = 'Nine'
-  elif RankNo == 10:
-    Rank = 'Ten'
-  elif RankNo == 11:
-    Rank = 'Jack'
-  elif RankNo == 12:
-    Rank = 'Queen'
-  elif RankNo == 13:
-    Rank = 'King'
+  if not ace_high:
+    if RankNo == 1:
+      Rank = 'Ace'
+    elif RankNo == 2:
+      Rank = 'Two'
+    elif RankNo == 3:
+      Rank = 'Three'
+    elif RankNo == 4:
+      Rank = 'Four'
+    elif RankNo == 5:
+      Rank = 'Five'
+    elif RankNo == 6:
+      Rank = 'Six'
+    elif RankNo == 7:
+      Rank = 'Seven'
+    elif RankNo == 8:
+      Rank = 'Eight'
+    elif RankNo == 9:
+      Rank = 'Nine'
+    elif RankNo == 10:
+      Rank = 'Ten'
+    elif RankNo == 11:
+      Rank = 'Jack'
+    elif RankNo == 12:
+      Rank = 'Queen'
+    elif RankNo == 13:
+      Rank = 'King'
+  else:
+    if RankNo == 1:
+      Rank = 'Two'
+    elif RankNo == 2:
+      Rank = 'Three'
+    elif RankNo == 3:
+      Rank = 'Four'
+    elif RankNo == 4:
+      Rank = 'Five'
+    elif RankNo == 5:
+      Rank = 'Six'
+    elif RankNo == 6:
+      Rank = 'Seven'
+    elif RankNo == 7:
+      Rank = 'Eight'
+    elif RankNo == 8:
+      Rank = 'Nine'
+    elif RankNo == 9:
+      Rank = 'Ten'
+    elif RankNo == 10:
+      Rank = 'Jack'
+    elif RankNo == 11:
+      Rank = 'Queen'
+    elif RankNo == 12:
+      Rank = 'King'
+    elif RankNo == 13:
+      Rank = 'Ace'
   return Rank
 
 def GetSuit(SuitNo):
@@ -74,6 +164,7 @@ def DisplayMenu():
   print('2. Play game (without shuffle)')
   print('3. Display recent scores')
   print('4. Reset recent scores')
+  print('5. Options')
   print()
   print('Select an option from the menu (or enter q to quit): ', end='')
 
@@ -261,7 +352,13 @@ if __name__ == '__main__':
       LoadDeck(Deck)
       PlayGame(Deck, RecentScores)
     elif Choice == '3':
+      RecentScores = BubbleSortScores(RecentScores)
       DisplayRecentScores(RecentScores)
     elif Choice == '4':
       ResetRecentScores(RecentScores)
+    elif Choice == '5':
+      DisplayOptions()
+      OptionChoice = GetOptionChoice()
+      ace_high = SetOptions(OptionChoice,ace_high)
+      
   
