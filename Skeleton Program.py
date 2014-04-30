@@ -6,25 +6,34 @@
 
 import random
 import datetime
+import pickle
 
 NO_OF_RECENT_SCORES = 3
 ace_high = True
 
-def TRecentScore():
-  pass
+def CheckUpdate():
+  complete = False
+  while not complete:
+    choice = input("Do you want to add your score to the high score table? (y or n): ")
+    choice = choice.lower()
+    if choice == "no":
+      choice = "n"
+    elif choice == "yes":
+      choice = "y"
+    if choice == "n" or choice == "y":
+      complete = True
+  return choice
+  
 def BubbleSortScores(RecentScores):
   complete = False
   while not complete:
     complete = True
-    for I in range(len(RecentScores)):
-      try:
-        if RecentScores[I].Score < RecentScores[I+1].Score:
-          complete = False
-          temp = RecentScores[I]
-          RecentScores[I] = RecentScores[I+1]
-          RecentScores[I+1] = temp
-      except:
-        pass
+    for I in range(1,len(RecentScores)-1):
+      if RecentScores[I].Score < RecentScores[I+1].Score:
+        complete = False
+        temp = RecentScores[I]
+        RecentScores[I] = RecentScores[I+1]
+        RecentScores[I+1] = temp
   return RecentScores
     
 def DisplayOptions():
@@ -79,7 +88,7 @@ class TCard():
 class TRecentScore():
   def __init__(self):
     self.Name = ''
-    self.Score = 0
+    self.Score = ''
     self.Date = ''
 
 Deck = [None]
@@ -223,16 +232,19 @@ def IsNextCardHigher(LastCard, NextCard):
   return Higher
 
 def GetPlayerName():
-    print()
-    complete = False
-    while not complete:
-      name = input("Please enter your name: ")
-      if len(name) == 0:
-        print("You must enter your name!")
-      else:
-        complete = True
-    print()
-    return name
+  print()
+  complete = False
+  print("Please enter your name: ")
+  while not complete:
+    name = input()
+    if len(name) != 0:
+      complete = True
+    else:
+      print()
+      print("You did not enter anything!")
+      print("Try again: ")
+  return name
+    
 
 def GetChoiceFromUser():
   Choice = input('Do you think the next card will be higher than the last card (enter y or n)? ')
@@ -276,36 +288,24 @@ def DisplayRecentScores(RecentScores):
   print()
 
 def UpdateRecentScores(RecentScores, Score):
-    complete = False
-    while not complete:
-      choice = input("Do you want to add your score to the high score table? (y or n): ")
-      choice = choice.lower()
-      if choice == "no":
-        choice = "n"
-      elif choice == "yes":
-        choice = "y"
-      if choice == "n" or choice == "y":
-        complete = True
-
-    FoundSpace = False
-    Count = 1
-    while (not FoundSpace) and (Count <= NO_OF_RECENT_SCORES):
-      if RecentScores[Count].Name == '':
-        FoundSpace = True
-      else:
-        Count = Count + 1
-      if not FoundSpace:
-        for Count in range(1, NO_OF_RECENT_SCORES):
-          RecentScores[Count].Name = RecentScores[Count + 1].Name
-          RecentScores[Count].Score = RecentScores[Count + 1].Score
-          Count = NO_OF_RECENT_SCORES
-    if choice == "y":
-      PlayerName = GetPlayerName()
-      RecentScores[Count].Name = PlayerName
-    RecentScores[Count].Score = Score
-    CurrentDate = datetime.date.today()
-    CurrentDate = CurrentDate.strftime("%d/%m/%Y")
-    RecentScores[Count].Date = CurrentDate    
+  PlayerName = GetPlayerName()
+  FoundSpace = False
+  Count = 1
+  while (not FoundSpace) and (Count <= NO_OF_RECENT_SCORES):
+    if RecentScores[Count].Name == '':
+      FoundSpace = True
+    else:
+      Count = Count + 1
+  if not FoundSpace:
+    for Count in range(1, NO_OF_RECENT_SCORES):
+      RecentScores[Count].Name = RecentScores[Count + 1].Name
+      RecentScores[Count].Score = RecentScores[Count + 1].Score
+    Count = NO_OF_RECENT_SCORES
+  RecentScores[Count].Name = PlayerName
+  RecentScores[Count].Score = Score
+  CurrentDate = datetime.date.today()
+  CurrentDate = CurrentDate.strftime("%d/%m/%Y")
+  RecentScores[Count].Date = CurrentDate    
 
 def PlayGame(Deck, RecentScores):
   LastCard = TCard()
@@ -330,10 +330,14 @@ def PlayGame(Deck, RecentScores):
       GameOver = True
   if GameOver:
     DisplayEndOfGameMessage(NoOfCardsTurnedOver - 2)
-    UpdateRecentScores(RecentScores, NoOfCardsTurnedOver - 2)
+    choice = CheckUpdate()
+    if choice == "y":
+      UpdateRecentScores(RecentScores, NoOfCardsTurnedOver - 2)
   else:
     DisplayEndOfGameMessage(51)
-    UpdateRecentScores(RecentScores, 51)
+    choice = CheckUpdate()
+    if choice == "y":
+      UpdateRecentScores(RecentScores, 51)
 
 if __name__ == '__main__':
   for Count in range(1, 53):
