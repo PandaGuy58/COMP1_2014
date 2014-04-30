@@ -30,10 +30,13 @@ def BubbleSortScores(RecentScores):
     complete = True
     for I in range(1,len(RecentScores)-1):
       if RecentScores[I].Score < RecentScores[I+1].Score:
-        complete = False
-        temp = RecentScores[I]
-        RecentScores[I] = RecentScores[I+1]
-        RecentScores[I+1] = temp
+        try:
+          complete = False
+          temp = RecentScores[I]
+          RecentScores[I] = RecentScores[I+1]
+          RecentScores[I+1] = temp
+        except:
+          pass
   return RecentScores
     
 def DisplayOptions():
