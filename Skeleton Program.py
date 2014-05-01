@@ -34,9 +34,8 @@ def SaveScores(RecentScores):
         
 def LoadScores():
   print("What was the name of your file?")
-  count = -1
   RecentScores =[None]
-  for Count in range(1, 3):
+  for Count in range(1, NO_OF_RECENT_SCORES + 1):
     RecentScores.append(TRecentScore())
   fileName = input()
   fileName = fileName + ".txt"
@@ -46,9 +45,10 @@ def LoadScores():
       for line in (my_file):
         temp = line.rstrip("\n")
         array.append(temp)
-    countI = 1
+    countI = 0
     countII = -1 
-    while countII != 8:
+    while countII != 2:
+      countI += 1
       countII += 1
       RecentScores[countI].Name = array[countII]
       countII += 1
@@ -58,7 +58,7 @@ def LoadScores():
   except FileNotFoundError:
     print()
     print("Your file was not found!")
-    print("Empty recent scores list was created instead")
+    print("Empty scores list was created instead")
   return RecentScores
                             
   
