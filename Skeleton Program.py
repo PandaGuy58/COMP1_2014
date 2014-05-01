@@ -6,7 +6,6 @@
 
 import random
 import datetime
-import pickle
 
 NO_OF_RECENT_SCORES = 3
 ace_high = True
@@ -23,6 +22,32 @@ def CheckUpdate():
     if choice == "n" or choice == "y":
       complete = True
   return choice
+
+def SaveScores(RecentScores):
+  fileName = input("Name the file: ")
+  fileName = fileName + ".txt"
+  with open(fileName, mode ='w',encoding='utf-8') as my_file:
+    for count in range(1,4):
+      my_file.write(RecentScores[count].Name)+"\n"
+      my_file.write(str(RecentScores[count].Score))+"\n"
+      my_file.write(RecentScores[count].Date)+"\n"
+        
+def LoadScores():
+  print("What was the name of your file?")
+  RecentScores =[None]
+  fileName = input()
+  fileName = fileName + ".txt"
+  try:
+    with open(fileName, mode='r',encoding='utf-8') as my_file:
+      pass
+
+  except IOError:
+    print("Your file was not found!")
+    print("Empty scores list was created ")
+    RecentScores = [None]
+    for Count in range(1, NO_OF_RECENT_SCORES + 1):
+      RecentScores.append(TRecentScore())
+  return RecentScores
   
 def BubbleSortScores(RecentScores):
   complete = False
@@ -177,6 +202,8 @@ def DisplayMenu():
   print('3. Display recent scores')
   print('4. Reset recent scores')
   print('5. Options')
+  print('6. Save file')
+  print('7. Load file')
   print()
   print('Select an option from the menu (or enter q to quit): ', end='')
 
@@ -367,5 +394,9 @@ if __name__ == '__main__':
       DisplayOptions()
       OptionChoice = GetOptionChoice()
       ace_high = SetOptions(OptionChoice,ace_high)
+    elif Choice == '6':
+      SaveScores(RecentScores)
+    elif Choice == '7':
+      RecentScores = LoadScores()
       
   
