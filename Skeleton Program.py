@@ -28,26 +28,39 @@ def SaveScores(RecentScores):
   fileName = fileName + ".txt"
   with open(fileName, mode ='w',encoding='utf-8') as my_file:
     for count in range(1,4):
-      my_file.write(RecentScores[count].Name)+"\n"
-      my_file.write(str(RecentScores[count].Score))+"\n"
-      my_file.write(RecentScores[count].Date)+"\n"
+      my_file.write(RecentScores[count].Name + "\n")
+      my_file.write(str(RecentScores[count].Score) + "\n")
+      my_file.write(RecentScores[count].Date + "\n")
         
 def LoadScores():
   print("What was the name of your file?")
+  count = -1
   RecentScores =[None]
+  for Count in range(1, 3):
+    RecentScores.append(TRecentScore())
   fileName = input()
   fileName = fileName + ".txt"
+  array = []
   try:
     with open(fileName, mode='r',encoding='utf-8') as my_file:
-      pass
-
-  except IOError:
+      for line in (my_file):
+        temp = line.rstrip("\n")
+        array.append(temp)
+    countI = 1
+    countII = -1 
+    while countII != 8:
+      countII += 1
+      RecentScores[countI].Name = array[countII]
+      countII += 1
+      RecentScores[countI].Score = array[countII]
+      countII += 1
+      RecentScores[countI].Date = array[countII]
+  except FileNotFoundError:
+    print()
     print("Your file was not found!")
-    print("Empty scores list was created ")
-    RecentScores = [None]
-    for Count in range(1, NO_OF_RECENT_SCORES + 1):
-      RecentScores.append(TRecentScore())
+    print("Empty recent scores list was created instead")
   return RecentScores
+                            
   
 def BubbleSortScores(RecentScores):
   complete = False
