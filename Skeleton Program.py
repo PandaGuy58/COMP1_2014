@@ -45,24 +45,31 @@ def LoadScores():
       for line in (my_file):
         temp = line.rstrip("\n")
         array.append(temp)
-    countI = 0
-    countII = -1 
-    while countII != 2:
-      countI += 1
-      countII += 1
-      RecentScores[countI].Name = array[countII]
-      countII += 1
-      RecentScores[countI].Score = array[countII]
-      countII += 1
-      RecentScores[countI].Date = array[countII]
   except FileNotFoundError:
     print()
     print("Your file was not found!")
     print("Empty scores list was created instead")
+
+  I = 0
+  II = 0
+  try:
+    while I != 3:
+      I += 1
+      RecentScores[I].Name = array[II]
+      II += 1
+      RecentScores[I].Score = array[II]
+      II += 1
+      RecentScores[I].Date = array[II]
+      II += 1
+  except:
+    pass
   return RecentScores
                             
   
 def BubbleSortScores(RecentScores):
+  for I in range(1,4):
+    temp = RecentScores[I].Score
+    RecentScores[I].Score = int(temp)
   complete = False
   while not complete:
     complete = True
