@@ -388,20 +388,25 @@ def PlayGame(Deck, RecentScores, same_score):
   DisplayCard(LastCard)
   NoOfCardsTurnedOver = 1
   while (NoOfCardsTurnedOver < 52) and (not GameOver):
+    Same = False
     GetCard(NextCard, Deck, NoOfCardsTurnedOver)
     Choice = ''
     while (Choice != 'y') and (Choice != 'n'):
       Choice = GetChoiceFromUser()
     DisplayCard(NextCard)
     NoOfCardsTurnedOver = NoOfCardsTurnedOver + 1
-    if NextCard.Rank == LastCard.Rank and not same_score:
-      Higher = "SAME"
+    if not same_score:
+      if NextCard.Rank == LastCard.Rank:
+        Same = True
+      else:
+        Higher = IsNextCardHigher(LastCard, NextCard)
     else:
       Higher = IsNextCardHigher(LastCard, NextCard)
-    if Higher == "SAME":
+    if Same:
       print("The cards were the same")
       LastCard.Rank = NextCard.Rank
       LastCard.Suit = NextCard.Suit
+      Same = False
     elif (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
       DisplayCorrectGuessMessage(NoOfCardsTurnedOver - 1)
       LastCard.Rank = NextCard.Rank
