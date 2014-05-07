@@ -9,6 +9,23 @@ import datetime
 
 NO_OF_RECENT_SCORES = 10
 ace_high = True
+same_score = True
+
+def SetSameScore(same_score):
+  complete = False
+  print("Do you want cards with the same value as previous card to end the game?")
+  while not complete:
+      user = input('Enter "y" or "n": ' )
+      user = user.lower()
+      if user == "y" or user == "n":
+        complete = True
+      else:
+        print("Invalid input!")
+  if user == 'y':
+    same_score = True
+  else:
+    same_score = False
+  return same_score      
 
 def CheckUpdate():
   complete = False
@@ -91,13 +108,14 @@ def DisplayOptions():
   print()
   print("OPTION MENU")
   print('1. Set Ace to be HIGH or LOW')
+  print('2. Card of same score ends the game')
 
 def GetOptionChoice():
   print("Select an option from the menu (or enter q to quit):")
   complete = False
   while not complete:
     OptionChoice = input()
-    if OptionChoice == '1':
+    if OptionChoice == '1' or '2':
       complete = True
     else:
       try:
@@ -113,7 +131,9 @@ def GetOptionChoice():
 def SetOptions(OptionChoice,ace_high):
   if OptionChoice == '1':
     ace_high = SetAceHighOrLow(ace_high)
-  return ace_high  
+  elif OptionChoice == '2':
+    SetSameScore(same_score)
+  return ace_high, same_score  
 
 def SetAceHighOrLow(ace_high):
   print("Do you want the ACE to be (h)igh or (l)ow?")
@@ -360,7 +380,7 @@ def UpdateRecentScores(RecentScores, Score):
   CurrentDate = CurrentDate.strftime("%d/%m/%Y")
   RecentScores[Count].Date = CurrentDate    
 
-def PlayGame(Deck, RecentScores):
+def PlayGame(Deck, RecentScores, same_score): 
   LastCard = TCard()
   NextCard = TCard()
   GameOver = False
@@ -374,8 +394,15 @@ def PlayGame(Deck, RecentScores):
       Choice = GetChoiceFromUser()
     DisplayCard(NextCard)
     NoOfCardsTurnedOver = NoOfCardsTurnedOver + 1
-    Higher = IsNextCardHigher(LastCard, NextCard)
-    if (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
+    if NextCard.Rank == LastCard.Rank and not same_score:
+      Higher = "SAME"
+    else:
+      Higher = IsNextCardHigher(LastCard, NextCard)
+    if Higher == "SAME":
+      print("The cards were the same")
+      LastCard.Rank = NextCard.Rank
+      LastCard.Suit = NextCard.Suit
+    elif (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
       DisplayCorrectGuessMessage(NoOfCardsTurnedOver - 1)
       LastCard.Rank = NextCard.Rank
       LastCard.Suit = NextCard.Suit
@@ -404,10 +431,10 @@ if __name__ == '__main__':
     if Choice == '1':
       LoadDeck(Deck)
       ShuffleDeck(Deck)
-      PlayGame(Deck, RecentScores)
+      PlayGame(Deck, RecentScores,same_score)
     elif Choice == '2':
       LoadDeck(Deck)
-      PlayGame(Deck, RecentScores)
+      PlayGame(Deck, RecentScores,same_score)
     elif Choice == '3':
       RecentScores = BubbleSortScores(RecentScores)
       DisplayRecentScores(RecentScores)
@@ -416,10 +443,8 @@ if __name__ == '__main__':
     elif Choice == '5':
       DisplayOptions()
       OptionChoice = GetOptionChoice()
-      ace_high = SetOptions(OptionChoice,ace_high)
+      ace_high, same_score = SetOptions(OptionChoice,ace_high)
     elif Choice == '6':
       SaveScores(RecentScores)
     elif Choice == '7':
-      RecentScores = LoadScores()
-      
-  
+      RecentScores = LoadScores()   
