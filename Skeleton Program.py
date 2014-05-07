@@ -7,7 +7,7 @@
 import random
 import datetime
 
-NO_OF_RECENT_SCORES = 3
+NO_OF_RECENT_SCORES = 10
 ace_high = True
 
 def CheckUpdate():
@@ -27,7 +27,7 @@ def SaveScores(RecentScores):
   fileName = input("Name the file: ")
   fileName = fileName + ".txt"
   with open(fileName, mode ='w',encoding='utf-8') as my_file:
-    for count in range(1,4):
+    for count in range(1, NO_OF_RECENT_SCORES + 1):
       my_file.write(RecentScores[count].Name + "\n")
       my_file.write(str(RecentScores[count].Score) + "\n")
       my_file.write(RecentScores[count].Date + "\n")
@@ -68,19 +68,22 @@ def LoadScores():
   
 def BubbleSortScores(RecentScores):
   for I in range(1,4):
-    temp = RecentScores[I].Score
-    RecentScores[I].Score = int(temp)
+    try:
+      temp = RecentScores[I].Score
+      RecentScores[I].Score = int(temp)
+    except ValueError:
+      pass
   complete = False
   while not complete:
     complete = True
     for I in range(1,len(RecentScores)-1):
-      if RecentScores[I].Score < RecentScores[I+1].Score:
-        try:
+      try:
+        if RecentScores[I].Score < RecentScores[I+1].Score:
           complete = False
           temp = RecentScores[I]
           RecentScores[I] = RecentScores[I+1]
           RecentScores[I+1] = temp
-        except:
+      except:
           pass
   return RecentScores
     
@@ -347,7 +350,7 @@ def UpdateRecentScores(RecentScores, Score):
     else:
       Count = Count + 1
   if not FoundSpace:
-    for Count in range(1, NO_OF_RECENT_SCORES):
+    for Count in range(1, NO_OF_RECENT_SCORES + 1):
       RecentScores[Count].Name = RecentScores[Count + 1].Name
       RecentScores[Count].Score = RecentScores[Count + 1].Score
     Count = NO_OF_RECENT_SCORES
