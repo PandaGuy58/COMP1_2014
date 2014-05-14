@@ -8,10 +8,8 @@ import random
 import datetime
 
 NO_OF_RECENT_SCORES = 10
-ace_high = True
-same_score = True
 
-def SetSameScore(same_score):
+def SetSameScore():
   complete = False
   print("Do you want cards with the same value as previous card to end the game?")
   while not complete:
@@ -128,14 +126,14 @@ def GetOptionChoice():
         print("Invalid Input!")
   return OptionChoice
 
-def SetOptions(OptionChoice,ace_high):
+def SetOptions(OptionChoice,ace_high,same_score):
   if OptionChoice == '1':
-    ace_high = SetAceHighOrLow(ace_high)
+    same_score = SetSameScore()
   elif OptionChoice == '2':
-    SetSameScore(same_score)
-  return ace_high, same_score  
+    ace_high = SetAceHighOrLow()
+  return same_score, ace_high  
 
-def SetAceHighOrLow(ace_high):
+def SetAceHighOrLow():
   print("Do you want the ACE to be (h)igh or (l)ow?")
   complete = False
   while not complete:
@@ -378,9 +376,16 @@ def UpdateRecentScores(RecentScores, Score):
   RecentScores[Count].Score = Score
   CurrentDate = datetime.date.today()
   CurrentDate = CurrentDate.strftime("%d/%m/%Y")
-  RecentScores[Count].Date = CurrentDate    
+  RecentScores[Count].Date = CurrentDate
 
-def PlayGame(Deck, RecentScores, same_score): 
+def SaveProgress(Deck, same_score, ace_high, NoOfCardsTurnedOver):
+  with open("Deck_Progress.txt", mode='w', encoding='utf-8') as my_file:
+    for each in Deck:
+      my_file.write(each +"\n")
+  with open("Additional.txt", mode='w', encoding='utf-8') as my_file:
+      pass
+
+def PlayGame(Deck, RecentScores, same_score, NoOfCardsTurnedOver): 
   LastCard = TCard()
   NextCard = TCard()
   GameOver = False
@@ -396,9 +401,10 @@ def PlayGame(Deck, RecentScores, same_score):
     NoOfCardsTurnedOver = NoOfCardsTurnedOver + 1
     if not same_score:
       if NextCard.Rank == LastCard.Rank:
-        print("The cards were the same")
+        print("The cards were the same!")
         LastCard.Rank = NextCard.Rank
         LastCard.Suit = NextCard.Suit
+        print()
       else:
         Higher = IsNextCardHigher(LastCard, NextCard)
         if (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
@@ -409,7 +415,6 @@ def PlayGame(Deck, RecentScores, same_score):
           GameOver = True
     else:
       Higher = IsNextCardHigher(LastCard, NextCard)
-    if same_score:
       if (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
         DisplayCorrectGuessMessage(NoOfCardsTurnedOver - 1)
         LastCard.Rank = NextCard.Rank
@@ -434,16 +439,19 @@ if __name__ == '__main__':
   for Count in range(1, NO_OF_RECENT_SCORES + 1):
     RecentScores.append(TRecentScore())
   Choice = ''
+  ace_high = True
+  same_score = True
+  NoOfCardsTurnedOver = 1
   while Choice != 'q':
     DisplayMenu()
     Choice = GetMenuChoice()
     if Choice == '1':
       LoadDeck(Deck)
       ShuffleDeck(Deck)
-      PlayGame(Deck, RecentScores,same_score)
+      PlayGame(Deck, RecentScores, same_score, NoOfCardsTurnedOver)
     elif Choice == '2':
       LoadDeck(Deck)
-      PlayGame(Deck, RecentScores,same_score)
+      PlayGame(Deck, RecentScores, same_score, NoOfCardsTurnedOver)
     elif Choice == '3':
       RecentScores = BubbleSortScores(RecentScores)
       DisplayRecentScores(RecentScores)
@@ -452,7 +460,7 @@ if __name__ == '__main__':
     elif Choice == '5':
       DisplayOptions()
       OptionChoice = GetOptionChoice()
-      ace_high, same_score = SetOptions(OptionChoice,ace_high)
+      ace_high, same_score = SetOptions(OptionChoice,ace_high,same_score)
     elif Choice == '6':
       SaveScores(RecentScores)
     elif Choice == '7':
