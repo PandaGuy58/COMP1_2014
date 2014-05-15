@@ -6,6 +6,7 @@
 
 import random
 import datetime
+import pickle
 
 NO_OF_RECENT_SCORES = 10
 
@@ -379,32 +380,44 @@ def UpdateRecentScores(RecentScores, Score):
   RecentScores[Count].Date = CurrentDate
 
 def SaveProgress(Deck, same_score, ace_high, NoOfCardsTurnedOver):
-  with open("Deck_Progress.txt", mode='w', encoding='utf-8') as my_file:
-    for each in Deck:
-      my_file.write(each +"\n")
+  with open("Deck_Progress", mode='wb') as my_file:
+    pickle.dump(Deck,my_file)
   with open("Additional.txt", mode='w', encoding='utf-8') as my_file:
-      pass
-
+    my_file.write(str(same_score)+"\n")
+    pass
+    
 def PlayGame(Deck, RecentScores, same_score, NoOfCardsTurnedOver): 
   LastCard = TCard()
   NextCard = TCard()
   GameOver = False
   GetCard(LastCard, Deck, 0)
   DisplayCard(LastCard)
-  NoOfCardsTurnedOver = 1
-  while (NoOfCardsTurnedOver < 52) and (not GameOver):
+  Quit = False
+  while (NoOfCardsTurnedOver < 52) and (not GameOver) and not Quit:
     GetCard(NextCard, Deck, NoOfCardsTurnedOver)
     Choice = ''
-    while (Choice != 'y') and (Choice != 'n'):
+    while (Choice != 'y') and (Choice != 'n') and Choice != 's':
       Choice = GetChoiceFromUser()
-    DisplayCard(NextCard)
-    NoOfCardsTurnedOver = NoOfCardsTurnedOver + 1
-    if not same_score:
-      if NextCard.Rank == LastCard.Rank:
-        print("The cards were the same!")
-        LastCard.Rank = NextCard.Rank
-        LastCard.Suit = NextCard.Suit
-        print()
+      if Choice == 's':
+        Quit = True
+        SaveProgress(Deck, same_score, ace_high, NoOfCardsTurnedOver)
+    if not Quit:
+      DisplayCard(NextCard)
+      NoOfCardsTurnedOver = NoOfCardsTurnedOver + 1
+      if not same_score:
+        if NextCard.Rank == LastCard.Rank:
+          print("The cards were the same!")
+          LastCard.Rank = NextCard.Rank
+          LastCard.Suit = NextCard.Suit
+          print()
+        else:
+          Higher = IsNextCardHigher(LastCard, NextCard)
+          if (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
+            DisplayCorrectGuessMessage(NoOfCardsTurnedOver - 1)
+            LastCard.Rank = NextCard.Rank
+            LastCard.Suit = NextCard.Suit
+          else:
+            GameOver = True
       else:
         Higher = IsNextCardHigher(LastCard, NextCard)
         if (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
@@ -413,25 +426,20 @@ def PlayGame(Deck, RecentScores, same_score, NoOfCardsTurnedOver):
           LastCard.Suit = NextCard.Suit
         else:
           GameOver = True
-    else:
-      Higher = IsNextCardHigher(LastCard, NextCard)
-      if (Higher and Choice == 'y') or (not Higher and Choice == 'n'):
-        DisplayCorrectGuessMessage(NoOfCardsTurnedOver - 1)
-        LastCard.Rank = NextCard.Rank
-        LastCard.Suit = NextCard.Suit
-      else:
-        GameOver = True
-
-  if GameOver:
-    DisplayEndOfGameMessage(NoOfCardsTurnedOver - 2)
-    choice = CheckUpdate()
-    if choice == "y":
-      UpdateRecentScores(RecentScores, NoOfCardsTurnedOver - 2)
+  
+  if Quit:
+    print("Progress saved - you can return to this game later.")
   else:
-    DisplayEndOfGameMessage(51)
-    choice = CheckUpdate()
-    if choice == "y":
-      UpdateRecentScores(RecentScores, 51)
+    if GameOver:
+      DisplayEndOfGameMessage(NoOfCardsTurnedOver - 2)
+      choice = CheckUpdate()
+      if choice == "y":
+        UpdateRecentScores(RecentScores, NoOfCardsTurnedOver - 2)
+    else:
+      DisplayEndOfGameMessage(51)
+      choice = CheckUpdate()
+      if choice == "y":
+        UpdateRecentScores(RecentScores, 51)
 
 if __name__ == '__main__':
   for Count in range(1, 53):
